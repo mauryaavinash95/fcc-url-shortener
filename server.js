@@ -6,9 +6,10 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var insert = require('./insert');
-console.log("Insert is: ", insert);
+var promisify = require('util').promisify;
+var dns = require('dns');
 var app = express();
-
+var lookup = promisify(dns.lookup);
 // Basic Configuration 
 var port = process.env.PORT || 3000;
 
@@ -26,7 +27,7 @@ app.post('/api/shorturl/new', function(request, response){
     insert(original_url)
     .then(res=>{
       console.log("Response in server is: ", res);
-      response.send("Hi");
+      response.send({original_url: res.original_url, short_url: res.short_url});
     })
     .catch(err=>{
       console.log("Error is: ", err);
