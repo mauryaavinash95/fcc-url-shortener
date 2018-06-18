@@ -33,16 +33,16 @@ app.post('/api/shorturl/new', function(request, response){
     var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
     var regex = new RegExp(expression);
     if(!original_url.match(regex)){
-      console.log("Original URL  ", )
+      console.log("Original URL is invalid")
       return response.send({"error":"invalid URL"});
     }
     let lookup_url = original_url.split("//")[1];
     URL.findOne({original_url})
     .then(res=>{
       if(res){
+        console.log("Found original URL in DB");
         return response.send({original_url: res.original_url, short_url: res.short_url});
       } else {
-        return 
         lookup(lookup_url)
         .then(res=>{
           console.log("DNS lookup: ", res);
