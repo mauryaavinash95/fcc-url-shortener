@@ -10,6 +10,7 @@ var promisify = require('util').promisify;
 var dns = require('dns');
 var app = express();
 var lookup = promisify(dns.lookup);
+var {URL} = require('./schema');
 
 // Basic Configuration 
 var port = process.env.PORT || 3000;
@@ -22,10 +23,24 @@ app.use(express.static('public'));
 /** this project needs to parse POST bodies **/
 // you should mount the body-parser here
 
+
 app.post('/api/shorturl/new', function(request, response){
     let {original_url} = request.body;
     console.log("Original URL: ", original_url);
-    lookup(original_url)
+    var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+    var regex = new RegExp(expression);
+    if(!original_url.match(regex)){
+      return response.send({"error":"invalid URL"});
+    }
+    let lookup_url = original_url.split("//")[1];
+    URL.findOne({original_url})
+    .then(res=>{
+      if(res){
+        return response.send({original_url: res.original_url, short_url: res.short_url});
+      } else {
+        return lookup(lookup_url)  
+      }
+    })
     .then(res=>{
       console.log("DNS lookup: ", res);
       return insert(original_url);
@@ -37,6 +52,7 @@ app.post('/api/shorturl/new', function(request, response){
     .catch(err=>{
       console.log("Error is: ", err);
       response.send("Bye");
+      return err;
     })
 });
 
