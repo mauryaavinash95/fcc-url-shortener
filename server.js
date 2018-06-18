@@ -10,6 +10,7 @@ var promisify = require('util').promisify;
 var dns = require('dns');
 var app = express();
 var lookup = promisify(dns.lookup);
+
 // Basic Configuration 
 var port = process.env.PORT || 3000;
 
@@ -24,7 +25,11 @@ app.use(express.static('public'));
 app.post('/api/shorturl/new', function(request, response){
     let {original_url} = request.body;
     console.log("Original URL: ", original_url);
-    insert(original_url)
+    lookup(original_url)
+    .then(res=>{
+      console.log("DNS lookup: ", res);
+      return insert(original_url);
+    })
     .then(res=>{
       console.log("Response in server is: ", res);
       response.send({original_url: res.original_url, short_url: res.short_url});
