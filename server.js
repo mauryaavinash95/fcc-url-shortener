@@ -23,6 +23,9 @@ app.use(express.static('public'));
 /** this project needs to parse POST bodies **/
 // you should mount the body-parser here
 
+app.get("/", function(request, response){
+  return response.send("Hit /api/shorturl/new with original_url as key");
+})
 
 app.post('/api/shorturl/new', function(request, response){
     let {original_url} = request.body;
@@ -38,23 +41,30 @@ app.post('/api/shorturl/new', function(request, response){
       if(res){
         return response.send({original_url: res.original_url, short_url: res.short_url});
       } else {
-        return lookup(lookup_url)  
+        return 
+        lookup(lookup_url)
+        .then(res=>{
+          console.log("DNS lookup: ", res);
+          return insert(original_url);
+        })
+        .then(res=>{
+          console.log("Response in server is: ", res);
+          response.send({original_url: res.original_url, short_url: res.short_url});
+        })
       }
-    })
-    .then(res=>{
-      console.log("DNS lookup: ", res);
-      return insert(original_url);
-    })
-    .then(res=>{
-      console.log("Response in server is: ", res);
-      response.send({original_url: res.original_url, short_url: res.short_url});
     })
     .catch(err=>{
       console.log("Error is: ", err);
-      response.send("Bye");
+      response.send({"error":"invalid URL"});
       return err;
     })
 });
+
+app.get("/api/shorturl/:id", function(request, response){
+  let id = request.params.id;
+  console.log("Got id: ", id);
+  response.send("Got it");
+})
 
 // DB Connection
 mongoose.Promise = global.Promise;
