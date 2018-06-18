@@ -5,7 +5,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var cors = require('cors');
-var { insert } = require('./insert');
+var insert = require('./insert');
 console.log("Insert is: ", insert);
 var app = express();
 
