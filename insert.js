@@ -6,3 +6,5 @@ function insert(original_url){
     console.log("New Counter: ", counter);
   })
 }
+
+module.exports = insert;
