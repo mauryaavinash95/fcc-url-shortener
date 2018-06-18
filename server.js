@@ -25,8 +25,17 @@ app.get('/api/shorturl/new', function(req, res){
     
 });
 
-
-
-app.listen(port, function () {
-  console.log('Node.js listening ...');
-});
+// DB Connection
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.MONGODB_URL)
+    .then((resolve) => {
+        console.log("Connection with MongoDB server successful: ", process.env.MONGODB_URL);
+    })
+    .then(()=>{
+      app.listen(port, function () {
+        console.log('Node.js listening ...');
+      });
+    })
+    .catch((err) => {
+        console.log("Error connecting to MongoDB caught: ", err);
+    });
