@@ -13,6 +13,10 @@ const URL = mongoose.model('url', {
 })
 
 const Counter = mongoose.model('counter', {
+  _id: {
+    type: String,
+    default: "counterId"
+  },
   counter : {
     type: Number,
     required: true,

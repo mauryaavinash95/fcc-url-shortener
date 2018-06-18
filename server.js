@@ -5,6 +5,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var insert = require('./insert');
 
 var app = express();
 
@@ -19,11 +20,18 @@ app.use(cors());
 /** this project needs to parse POST bodies **/
 // you should mount the body-parser here
 
-app.use('/public', express.static(process.cwd() + '/public'));
-
-app.get('/api/shorturl/new', function(request, response){
-    let {url} = request.body;
-    
+app.get('/api', function(request, response){
+    let {original_url} = request.body;
+    console.log("Original URL: ", original_url);
+    insert(original_url)
+    .then(res=>{
+      console.log("Response in server is: ", res);
+      response.send("Hi");
+    })
+    .catch(err=>{
+      console.log("Error is: ", err);
+      response.send("Bye");
+    })
 });
 
 // DB Connection
