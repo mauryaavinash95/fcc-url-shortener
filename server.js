@@ -33,6 +33,7 @@ app.post('/api/shorturl/new', function(request, response){
     var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
     var regex = new RegExp(expression);
     if(!original_url.match(regex)){
+      console.log("Original URL  ", )
       return response.send({"error":"invalid URL"});
     }
     let lookup_url = original_url.split("//")[1];
@@ -63,7 +64,16 @@ app.post('/api/shorturl/new', function(request, response){
 app.get("/api/shorturl/:id", function(request, response){
   let id = request.params.id;
   console.log("Got id: ", id);
-  response.send("Got it");
+  URL.findOne({short_url: id})
+  .then(res=>{
+    if(res)
+      response.redirect(res.original_url);
+    else
+      response.send({error: "No such short_url found"});
+  })
+  .catch(err=>{
+    response.send({error: "Got Error"});
+  })
 })
 
 // DB Connection
