@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const url = mongoose.model('url', {
+const URL = mongoose.model('url', {
   original_url: {
     type: String,
     trim: true,
@@ -11,3 +11,13 @@ const url = mongoose.model('url', {
     required: true
   }
 })
+
+const Counter = mongoose.model('counter', {
+  counter : {
+    type: Number,
+    required: true,
+    default: 0
+  }
+})
+
+module.exports = { URL, Counter }
